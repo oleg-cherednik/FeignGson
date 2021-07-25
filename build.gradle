@@ -2,51 +2,54 @@ buildscript {
     repositories {
         jcenter()
     }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-    }
 }
 
 plugins {
-    id 'java'
-    id 'application'
     id 'jacoco'
-    id 'io.codearte.nexus-staging' version '0.11.0'
-//    id "com.github.hierynomus.license" version "0.15.0"
-}
+    id 'java-library'
+    id 'org.cadixdev.licenser' version '0.6.1'
 
-apply plugin: 'com.bmuschko.nexus'
+    id 'signing'
+    id 'maven-publish'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
+}
 
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
-group 'ru.oleg-cherednik.gson-utils'
-version '2.8.6.1_11.0_1'
+group = 'ru.oleg-cherednik.gson'
+version = '2.1'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
-mainClassName = 'unknown'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 configurations {
-    jar.archiveName = "gson-feign-${version}.jar"
+    jar.archiveName = "${rootProject.name}-${version}.jar"
 }
 
 dependencies {
-    implementation 'io.github.openfeign:feign-core:11.0'
-    implementation 'ru.oleg-cherednik.gson-utils:gson-utils:2.8.6.1'
+    api "io.github.openfeign:feign-core:${property('feign.version')}"
+    implementation "ru.oleg-cherednik.gson:gson-utils:${property('gson-utils.version')}"
 
-    testImplementation 'org.testng:testng:7.3.0'
-    testImplementation 'io.github.openfeign:feign-okhttp:11.0'
-    testImplementation 'io.github.openfeign:feign-spring4:11.0'
-    testImplementation 'io.github.openfeign:feign-jackson:11.0'
+    testImplementation('org.testng:testng:7.4.0') {
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'org.apache.ant', module: 'ant'
+    }
 
+    testImplementation "io.github.openfeign:feign-okhttp:${property('feign.version')}"
+    testImplementation "io.github.openfeign:feign-spring4:${property('feign.version')}"
+    testImplementation "io.github.openfeign:feign-jackson:${property('feign.version')}"
+
+    testImplementation "com.google.code.gson:gson:${property('gson.version')}"
+//    testImplementation 'org.assertj:assertj-core:3.20.2'
+//    testImplementation 'commons-io:commons-io:2.11.0'
+//    testImplementation 'org.mockito:mockito-core:3.11.2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-web:2.3.8.RELEASE'
 //    testImplementation 'org.springframework.boot:spring-boot-starter-json:2.3.8.RELEASE'
@@ -54,10 +57,6 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.8.RELEASE') {
         exclude group: 'org.junit.vintage'
     }
-
-
-//    testImplementation 'commons-io:commons-io:2.5'
-//    testImplementation 'org.mockito:mockito-core:3.7.0'
 }
 
 jacocoTestReport {
@@ -73,56 +72,70 @@ test {
     useTestNG()
 }
 
-//license {
-//    header = file('license_header.txt')
-//    include "**/*.java"
-//    exclude "**/*Test.java"
-//}
+license {
+    header rootProject.file('APACHE.txt')
+    include '**/*.java'
+    newLine = false
+}
 
-modifyPom {
-    project {
-        name 'gson-feign'
-        description 'Some utils for Jackson Project'
-        url 'https://github.com/oleg-cherednik/GsonFeign'
-        inceptionYear '2021'
+signing {
+    sign configurations.archives
+}
 
-        scm {
-            url 'https://github.com/oleg-cherednik/gson-utils'
-            connection 'scm:https://github.com/oleg-cherednik/GsonFeign.git'
-            developerConnection 'scm:git@github.com:oleg-cherednik/GsonFeign.git'
-        }
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
 
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
-            }
-        }
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
 
-        developers {
-            developer {
-                id 'oleg.cherednik'
-                name 'Oleg Cherednik'
-                email 'oleg.cherednik@gmail.com'
+            pom {
+                name = rootProject.name
+
+//                description = "\n" +
+//                        "    Gson usability utilities.\n" +
+//                        "    It's designed to add additional features like easy and centralized configuration,\n" +
+//                        "    builder or static method set.\n" +
+//                        "  "
+
+                url = 'https://github.com/oleg-cherednik/gson-feign'
+                inceptionYear = '2021'
+
+                licenses {
+                    license {
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'oleg.cherednik'
+                        name = 'Oleg Cherednik'
+                        email = 'oleg.cherednik@gmail.com'
+                    }
+                }
+
+                scm {
+                    url = 'https://github.com/oleg-cherednik/gson-feign'
+                    connection = 'scm:https://github.com/oleg-cherednik/gson-feign.git'
+                    developerConnection = 'scm:git@github.com:oleg-cherednik/gson-feign.git'
+                }
             }
         }
     }
+
+    repositories {
+        mavenLocal()
+    }
 }
 
-extraArchive {
-    sources true
-    tests true
-    javadoc true
-}
-
-nexus {
-    sign true
-    repositoryUrl 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-    snapshotRepositoryUrl 'https://oss.sonatype.org/content/repositories/snapshots'
-}
-
-nexusStaging {
-    packageGroup 'ru.oleg-cherednik'
-    stagingProfileId 'd3835bf60f05b9'
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
 }
