@@ -29,15 +29,15 @@ public class BookClientTest extends BaseClientTest {
         a++;
     }
 
-    public void bar() {
-        Book book = new Book();
-        book.setTitle("title");
-        book.setAuthor("author");
-
-        Book actual = client.createBook(book);
-
-        int a = 0;
-        a++;
-    }
+//    public void bar() {
+//        Book book = new Book();
+//        book.setTitle("title");
+//        book.setAuthor("author");
+//
+//        Book actual = client.createBook(book);
+//
+//        int a = 0;
+//        a++;
+//    }
 
 }
