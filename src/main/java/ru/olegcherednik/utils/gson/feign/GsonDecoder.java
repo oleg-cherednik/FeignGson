@@ -3,7 +3,7 @@ package ru.olegcherednik.utils.gson.feign;
 import feign.Response;
 import feign.Util;
 import feign.codec.Decoder;
-import ru.olegcherednik.utils.gson.GsonDecorator;
+import ru.olegcherednik.gson.GsonDecorator;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

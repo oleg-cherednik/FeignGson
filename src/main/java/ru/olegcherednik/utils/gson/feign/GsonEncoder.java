@@ -2,7 +2,7 @@ package ru.olegcherednik.utils.gson.feign;
 
 import feign.RequestTemplate;
 import feign.codec.Encoder;
-import ru.olegcherednik.utils.gson.GsonDecorator;
+import ru.olegcherednik.gson.GsonDecorator;
 
 import java.lang.reflect.Type;
 

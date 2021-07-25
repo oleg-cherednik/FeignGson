@@ -13,8 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.olegcherednik.utils.gson.GsonDecorator;
-import ru.olegcherednik.utils.gson.GsonHelper;
+import ru.olegcherednik.gson.GsonDecorator;
+import ru.olegcherednik.gson.GsonUtilsHelper;
 import ru.olegcherednik.utils.gson.feign.app.server.SpringBootApp;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringBootApp.class)
@@ -25,7 +25,7 @@ public abstract class BaseClientTest {
     protected int randomServerPort;
 
     protected <T> T buildClient(Class<T> clientClass) {
-        GsonDecorator gson = GsonHelper.createGsonDecorator();
+        GsonDecorator gson = GsonUtilsHelper.createGsonDecorator();
         ObjectMapper objectMapper = new ObjectMapper()
                 .registerModule(new Jdk8Module())
                 .registerModule(new JavaTimeModule());
