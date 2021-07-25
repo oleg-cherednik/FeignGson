@@ -1,4 +1,4 @@
-package ru.olegcherednik.utils.gson.feign;
+package ru.olegcherednik.gson.feign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -9,17 +9,15 @@ import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.okhttp.OkHttpClient;
 import feign.spring.SpringContract;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.olegcherednik.gson.GsonDecorator;
-import ru.olegcherednik.gson.GsonUtilsHelper;
-import ru.olegcherednik.utils.gson.feign.app.server.SpringBootApp;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import ru.olegcherednik.gson.feign.app.server.SpringBootApp;
+import ru.olegcherednik.gson.utils.GsonDecorator;
+import ru.olegcherednik.gson.utils.GsonUtilsHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringBootApp.class)
-@ExtendWith(SpringExtension.class)
-public abstract class BaseClientTest {
+public abstract class BaseClientTest extends AbstractTestNGSpringContextTests {
 
     @LocalServerPort
     protected int randomServerPort;

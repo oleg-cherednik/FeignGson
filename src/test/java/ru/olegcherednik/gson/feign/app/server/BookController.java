@@ -1,9 +1,9 @@
-package ru.olegcherednik.utils.gson.feign.app.server;
+package ru.olegcherednik.gson.feign.app.server;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.olegcherednik.utils.gson.feign.app.dto.Book;
+import ru.olegcherednik.gson.feign.app.dto.Book;
 
 /**
  * @author Oleg Cherednik

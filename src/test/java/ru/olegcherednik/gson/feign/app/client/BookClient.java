@@ -1,9 +1,9 @@
-package ru.olegcherednik.utils.gson.feign.app.client;
+package ru.olegcherednik.gson.feign.app.client;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.olegcherednik.utils.gson.feign.app.dto.Book;
+import ru.olegcherednik.gson.feign.app.dto.Book;
 
 /**
  * @author Oleg Cherednik

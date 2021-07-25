@@ -1,4 +1,4 @@
-package ru.olegcherednik.utils.gson.feign.app.dto;
+package ru.olegcherednik.gson.feign.app.dto;
 
 /**
  * @author Oleg Cherednik
