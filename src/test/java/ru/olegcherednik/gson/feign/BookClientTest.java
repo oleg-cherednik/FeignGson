@@ -29,8 +29,11 @@ import ru.olegcherednik.gson.utils.GsonDecorator;
 import ru.olegcherednik.gson.utils.GsonUtilsHelper;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Test
 @Import(BookController.class)
@@ -48,9 +51,64 @@ public class BookClientTest extends BaseClientTest {
             Book actual = client.createBook(book);
             assertThat(actual).isNotNull();
             assertThat(actual.getTitle()).isEqualTo(book.getTitle());
-            assertThat(actual.getAuthor()).isEqualTo(book.getAuthor());                                                                 assertThat(actual.getResponse()).isEqualTo(BookController.class.getSimpleName());
+            assertThat(actual.getAuthor()).isEqualTo(book.getAuthor());
+            assertThat(actual.getResponse()).isEqualTo(BookController.class.getSimpleName());
             assertThat(requestInterceptor.body).isEqualTo(gson.writeValue(book));
         }
+    }
+
+    public void shouldReceiveObjectWhenSendObject() {
+        BookClient client = buildClient(BookClient.class);
+        Book actual = client.createBook(new Book("title", "author"));
+        assertThat(actual).isNotNull();
+        assertThat(actual).isEqualTo(new Book("title", "author", "BookController"));
+    }
+
+    public void shouldReceiveListWhenSendList() {
+        BookClient client = buildClient(BookClient.class);
+        List<Book> actual = client.bookList(Arrays.asList(
+                new Book("title1", "author1"),
+                new Book("title2", "author2")));
+
+        assertThat(actual).isNotNull();
+        assertThat(actual).hasSize(2);
+        assertThat(actual).containsExactly(
+                new Book("title1", "author1", "BookController1"),
+                new Book("title2", "author2", "BookController2"));
+    }
+
+    public void shouldReceiveMapWhenSendMap() {
+        Map<Integer, List<Book>> books = new HashMap<>();
+        books.put(1, Arrays.asList(
+                new Book("title1", "author1"),
+                new Book("title2", "author2")));
+        books.put(2, Arrays.asList(
+                new Book("title3", "author3"),
+                new Book("title4", "author4")));
+
+        BookClient client = buildClient(BookClient.class);
+        Map<Integer, List<Book>> actual = client.bookMap(books);
+        assertThat(actual).isNotNull();
+        assertThat(actual).hasSize(2);
+        assertThat(actual.get(1)).containsExactly(
+                new Book("title1", "author1", "BookController_1_1"),
+                new Book("title2", "author2", "BookController_1_2"));
+        assertThat(actual.get(2)).containsExactly(
+                new Book("title3", "author3", "BookController_2_1"),
+                new Book("title4", "author4", "BookController_2_2"));
+    }
+
+    public void shouldReceiveNullWhenSendNull() {
+        BookClient client = buildClient(BookClient.class);
+        Book actual = client.bookNull();
+        assertThat(actual).isNull();
+    }
+
+    public void shouldReceiveDefaultObjectWhenNotFound() {
+        BookClient client = buildClient(BookClient.class);
+        assertThat(client.bookNotFound()).isNull();
+        assertThat(client.bookListNotFound()).isEmpty();
+        assertThat(client.bookMapNotFound()).isEmpty();
     }
 
     private static final class LocalRequestInterceptor implements RequestInterceptor {

@@ -44,6 +44,7 @@ dependencies {
         exclude group: 'org.apache.ant', module: 'ant'
     }
 
+//    testImplementation 'ru.oleg-cherednik.utils.reflection:reflection-utils:1.0'
     testImplementation "io.github.openfeign:feign-okhttp:${property('feign.version')}"
     testImplementation "io.github.openfeign:feign-spring4:${property('feign.version')}"
     testImplementation "io.github.openfeign:feign-jackson:${property('feign.version')}"

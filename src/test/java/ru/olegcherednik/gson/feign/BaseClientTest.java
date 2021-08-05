@@ -27,6 +27,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import ru.olegcherednik.gson.feign.app.server.SpringBootApp;
 import ru.olegcherednik.gson.utils.GsonDecorator;
+import ru.olegcherednik.gson.utils.GsonUtilsHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringBootApp.class)
 public abstract class BaseClientTest extends AbstractTestNGSpringContextTests {
@@ -34,14 +35,22 @@ public abstract class BaseClientTest extends AbstractTestNGSpringContextTests {
     @LocalServerPort
     protected int randomServerPort;
 
+    protected <T> T buildClient(Class<T> cls) {
+        return buildClient(cls, GsonUtilsHelper.createGsonDecorator(), null);
+    }
+
     protected <T> T buildClient(Class<T> cls, GsonDecorator gson, RequestInterceptor requestInterceptor) {
-        return Feign.builder()
-                    .contract(new SpringContract())
-                    .client(new OkHttpClient())
-                    .encoder(new GsonEncoder(gson))
-                    .decoder(new GsonDecoder(gson))
-                    .requestInterceptor(requestInterceptor)
-                    .target(cls, String.format("http://localhost:%d", randomServerPort));
+        Feign.Builder builder = Feign.builder()
+                                     .contract(new SpringContract())
+                                     .client(new OkHttpClient())
+                                     .encoder(new GsonEncoder(gson))
+                                     .decoder(new GsonDecoder(gson))
+                                     .decode404();
+
+        if (requestInterceptor != null)
+            builder.requestInterceptor(requestInterceptor);
+
+        return builder.target(cls, String.format("http://localhost:%d", randomServerPort));
     }
 
 }
