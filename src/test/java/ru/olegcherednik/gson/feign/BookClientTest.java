@@ -18,8 +18,12 @@
  */
 package ru.olegcherednik.gson.feign;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.Import;
 import org.testng.annotations.Test;
 import ru.olegcherednik.gson.feign.app.client.BookClient;
@@ -28,16 +32,37 @@ import ru.olegcherednik.gson.feign.app.server.BookController;
 import ru.olegcherednik.gson.utils.GsonDecorator;
 import ru.olegcherednik.gson.utils.GsonUtilsHelper;
 
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 
 @Test
 @Import(BookController.class)
 public class BookClientTest extends BaseClientTest {
+
+    public void shouldUseGsonOnFeignSide() {
+        Book request = new Book("title", "author");
+        Book response = new Book("title", "author", "BookController");
+
+        Gson gson = Mockito.spy(GsonUtilsHelper.createGson());
+        InOrder order = inOrder(gson);
+        BookClient client = buildClient(BookClient.class, new GsonDecorator(gson));
+
+        Book actual = client.book(request);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isEqualTo(response);
+
+        order.verify(gson).toJson(eq(request), eq(Book.class), any(JsonWriter.class));
+        order.verify(gson).fromJson(any(Reader.class), eq((Type)Book.class));
+    }
 
     public void shouldUseGivenGsonDecoratorWhenWorkWithJson() {
         for (GsonDecorator gson : Arrays.asList(GsonUtilsHelper.createGsonDecorator(),
@@ -45,10 +70,9 @@ public class BookClientTest extends BaseClientTest {
             LocalRequestInterceptor requestInterceptor = new LocalRequestInterceptor();
 
             BookClient client = buildClient(BookClient.class, gson, requestInterceptor);
-            Book book = new Book();
-            book.setTitle("title");
-            book.setAuthor("author");
-            Book actual = client.createBook(book);
+            Book book = new Book("title", "author");
+            Book actual = client.book(book);
+
             assertThat(actual).isNotNull();
             assertThat(actual.getTitle()).isEqualTo(book.getTitle());
             assertThat(actual.getAuthor()).isEqualTo(book.getAuthor());
@@ -59,7 +83,7 @@ public class BookClientTest extends BaseClientTest {
 
     public void shouldReceiveObjectWhenSendObject() {
         BookClient client = buildClient(BookClient.class);
-        Book actual = client.createBook(new Book("title", "author"));
+        Book actual = client.book(new Book("title", "author"));
         assertThat(actual).isNotNull();
         assertThat(actual).isEqualTo(new Book("title", "author", "BookController"));
     }

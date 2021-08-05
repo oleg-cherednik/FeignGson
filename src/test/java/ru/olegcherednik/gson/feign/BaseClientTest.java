@@ -36,7 +36,11 @@ public abstract class BaseClientTest extends AbstractTestNGSpringContextTests {
     protected int randomServerPort;
 
     protected <T> T buildClient(Class<T> cls) {
-        return buildClient(cls, GsonUtilsHelper.createGsonDecorator(), null);
+        return buildClient(cls, GsonUtilsHelper.createGsonDecorator());
+    }
+
+    protected <T> T buildClient(Class<T> cls, GsonDecorator gson) {
+        return buildClient(cls, gson, null);
     }
 
     protected <T> T buildClient(Class<T> cls, GsonDecorator gson, RequestInterceptor requestInterceptor) {

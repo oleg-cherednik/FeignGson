@@ -35,7 +35,7 @@ import java.util.Map;
 public interface BookClient {
 
     @PostMapping(value = "book", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    Book createBook(@RequestBody Book book);
+    Book book(@RequestBody Book book);
 
     @PostMapping(value = "book_list", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     List<Book> bookList(List<Book> books);

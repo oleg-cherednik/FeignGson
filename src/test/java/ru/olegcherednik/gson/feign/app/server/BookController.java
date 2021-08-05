@@ -36,7 +36,7 @@ import java.util.Map;
 public class BookController {
 
     @PostMapping("book")
-    public Book createBook(@RequestBody Book book) {
+    public Book book(@RequestBody Book book) {
         book.setResponse(BookController.class.getSimpleName());
         return book;
     }
